@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solmar Bay — an open-world story</title>
+<link rel="icon" href="data:,">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #0d1117; color: #e6edf3; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  body { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; }
+  #wrap { position: relative; width: 1280px; max-width: 100%; }
+  canvas { display: block; width: 100%; height: auto; background: #7fae5c; border-radius: 8px; box-shadow: 0 8px 40px rgba(0,0,0,0.6); }
+  .overlay { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: rgba(8, 12, 20, 0.82); border-radius: 8px; padding: 24px; }
+  .overlay h1 { font-size: 64px; letter-spacing: 6px; color: #ffd93c; text-shadow: 0 4px 0 rgba(0,0,0,0.4); }
+  .overlay h2 { font-size: 40px; letter-spacing: 4px; color: #ffd93c; }
+  .overlay .tag { margin-top: 6px; font-size: 15px; color: #9fb3c8; letter-spacing: 2px; text-transform: uppercase; }
+  .overlay p.story { max-width: 620px; margin: 18px 0 8px; font-size: 16px; line-height: 1.55; color: #d7e0ea; }
+  .overlay p.small { max-width: 620px; font-size: 13px; line-height: 1.5; color: #8b98a9; }
+  .btn { display: block; margin: 10px auto 0; padding: 12px 34px; font-size: 17px; font-weight: 700; color: #111; background: #ffd93c; border: 0; border-radius: 8px; cursor: pointer; }
+  .btn:hover { background: #ffe066; }
+  .btn.ghost { background: transparent; color: #ffd93c; border: 2px solid #ffd93c; }
+  .btn.ghost:hover { background: rgba(255,217,60,0.12); }
+  .controls { margin-top: 18px; display: grid; grid-template-columns: auto auto; gap: 4px 18px; font-size: 13px; color: #b9c6d4; text-align: left; }
+  .controls b { color: #fff; }
+  #foot { margin-top: 10px; font-size: 12px; color: #6b7a8c; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="game" width="1280" height="800"></canvas>
+
+  <div id="menu" class="overlay">
+    <h1>SOLMAR BAY</h1>
+    <div class="tag">An open-world story &middot; five jobs &middot; one fixer</div>
+    <p class="story">Rook Vance came back to Solmar Bay with nothing but a name and a debt.
+      Fixer Mara Solis has work — five jobs, from a stolen car to the Meridian Bank vault.
+      Steal cars, lose the heat, settle the Viper crew, and run this town.</p>
+    <button id="new-btn" class="btn">New Game</button>
+    <button id="continue-btn" class="btn ghost" style="display:none">Continue</button>
+    <div class="controls">
+      <span><b>WASD / Arrows</b></span><span>move &amp; drive</span>
+      <span><b>Shift</b></span><span>run</span>
+      <span><b>E</b></span><span>enter / exit car &middot; hold to crack the vault</span>
+      <span><b>Space</b></span><span>handbrake</span>
+      <span><b>F / Click</b></span><span>punch &middot; click to shoot (pistol)</span>
+      <span><b>Esc</b></span><span>pause</span>
+      <span><b>M</b></span><span>mute</span>
+    </div>
+    <p class="small">All art, names and story are original. The game runs entirely offline — no downloads, no requests.</p>
+  </div>
+
+  <div id="pause" class="overlay">
+    <h2>PAUSED</h2>
+    <p class="story">Solmar Bay waits for no one. Except right now.</p>
+    <button id="resume-btn" class="btn">Resume</button>
+    <button id="mute-btn" class="btn ghost">Sound: On</button>
+    <button id="quit-btn" class="btn ghost">Save &amp; Quit to Menu</button>
+  </div>
+
+  <div id="over" class="overlay">
+    <h2 id="over-title">WASTED</h2>
+    <p class="story" id="over-text"></p>
+    <button id="respawn-btn" class="btn">Respawn</button>
+  </div>
+</div>
+<div id="foot">Solmar Bay — a top-down open-world game. WASD move &middot; E enter car &middot; F punch &middot; Esc pause.</div>
+
+<script type="module">
+  import { Game } from './src/main.js';
+
+  const canvas = document.getElementById('game');
+  const game = new Game(canvas);
+  window.SOLMAR_DEBUG = { game };
+  window.SOLMAR_READY = true;
+
+  // ?scene=street|drive|chase|mission — deterministic setups for screenshots.
+  const params = new URLSearchParams(location.search);
+  const scene = params.get('scene');
+  if (scene) {
+    game.startGame(true);
+    game.applyScene(scene);
+  }
+</script>
+</body>
+</html>
